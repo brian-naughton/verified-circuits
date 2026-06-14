@@ -1,5 +1,7 @@
 # verified-circuits
 
+![Spec == Circuit == Model — a kernel-checked mechanistic circuit for a learned transformer, verified on every one of 65,536 inputs](assets/social-card.png)
+
 **Kernel-checkable mechanistic circuits for learned transformers.**
 
 > **▶ Start here: [the explainer notebook](explainer.ipynb)** — an executed,
@@ -66,6 +68,7 @@ certificates/   # (A2) emitted certificates + check.py (standalone re-verifier)
 
 ```bash
 pip install -e .                 # torch (CPU) + this package
+pip install -e '.[notebook]'     # extra: matplotlib + scikit-learn + jupyter (to re-run the explainer)
 python -m vcirc.train --n 10 --seeds 6     # train; saves an exact model to models/
 python -m pytest                 # spec correctness + saved model is exact
 

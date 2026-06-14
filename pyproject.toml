@@ -9,6 +9,10 @@ description = "Kernel-checkable mechanistic circuits for learned transformers (S
 requires-python = ">=3.9"
 dependencies = ["torch"]
 
+[project.optional-dependencies]
+# to re-run the explainer notebook / probes / social card
+notebook = ["matplotlib", "scikit-learn", "jupyter"]
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["vcirc*"]
