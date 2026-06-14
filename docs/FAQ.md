@@ -136,9 +136,9 @@ rigorous interval forward over all 65,536 inputs, so it takes **~hours** even wi
 strength* — a total, exact `Spec == Circuit == Model` equivalence over a *complete
 finite domain*, rather than performance/accuracy bounds on a larger, more realistic
 task (Gross et al.) or robustness/minimality on continuous vision inputs (Hadad et
-al.). A reviewer will think it; we own it. The bet is that an end-to-end *equivalence
-you can re-verify from the kernel up* is a complementary point in the design space,
-and a useful template for scaling the same discipline to harder tasks.
+al.). The aim isn't to compete with those results: an end-to-end *equivalence you
+can re-verify from the kernel up* is a complementary corner of the design space —
+and a template for carrying the same discipline to harder tasks.
 
 ## Honest limitations
 
