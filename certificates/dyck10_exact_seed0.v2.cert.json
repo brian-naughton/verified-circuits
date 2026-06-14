@@ -1,0 +1,36 @@
+{
+  "argmax_equals_circuit_all_inputs": true,
+  "arithmetic": "rigorous dyadic interval arithmetic, 96-bit precision, directed (outward) rounding; exp enclosed by Taylor+remainder; scale 1/sqrt(dh)=1/4 exact",
+  "checker": "certificates/check.py",
+  "checker_version": "a2b-v2-exact",
+  "circuit_sha256": "9bc810decfabebf5e31221aba51aea26e2bb4c393877facf0caa0b1893ad31b1",
+  "circuit_source": "vcirc/circuit.py",
+  "claim": "the exact-real function defined by these weights has argmax == Circuit.eval(x) and a strictly positive decision margin (>= the stated rational lower bound) on every input x in {0,1}^n, proven by rigorous interval arithmetic [portable]; the deployed float32 model reproduces these decisions exhaustively over the full domain [v1]",
+  "domain_size": 1024,
+  "generated_utc": "2026-06-14T15:12:01Z",
+  "interval_precision_bits": 96,
+  "max_endpoint_bits": 105,
+  "min_margin_input": "0001011110",
+  "min_margin_lower_bound": {
+    "float": 6.3956687339847536,
+    "fraction": [
+      506717081843543320754521061633,
+      79228162514264337593543950336
+    ]
+  },
+  "model_file": "models/dyck10_exact_seed0.pt",
+  "model_sha256": "5e8822f35a800290a08739eb13ccd8edf0533ad8c55981069eee2204814b226a",
+  "n": 10,
+  "per_class": {
+    "circuit_invalid": 982,
+    "circuit_valid": 42
+  },
+  "rung": "v2-exact",
+  "spec_sha256": "eaf3a73921933744070a91f995cd93d9bc7a310a4a25e721230de5c43f4005b1",
+  "spec_source": "vcirc/dyck.py",
+  "task": "dyck1",
+  "verifier_core": "vcirc/exact.py",
+  "verifier_core_sha256": "5ad4fb540f4ede93e9fdfe75fc1d8889a495a5f3c0cf040bad6bf5bb6ee0371a",
+  "weights_export": "certificates/dyck10_exact_seed0.weights.json",
+  "weights_export_sha256": "13367797947593718ea4af2feff02527e2e0b8ae2aa7e8174c00616f5c5f4fc5"
+}

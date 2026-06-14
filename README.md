@@ -26,8 +26,8 @@ Python.** That is the gap this repo targets.
 | Milestone | State |
 |---|---|
 | **A1** — a tiny transparent transformer learns the task to *exact 100%* over the full domain, positive margins | ✅ done (Dyck-1, n=10 & n=12, all seeds) |
-| **A2** — extract a symbolic circuit; certify `Circuit == Model` argmax on every input | ⏳ next |
-| **B** — Lean 4 proof `∀x, Circuit.eval x = Spec.eval x` (by induction) | ⏳ planned |
+| **A2** — extract a symbolic circuit; certify `Circuit == Model` argmax on every input | ✅ done (mechanism probed; rigorous rational margin ≥ +6.3957 on all 1,024 inputs) |
+| **B** — Lean 4 proof `∀x, Circuit.eval x = Spec.eval x` (by induction) | ⏳ next |
 | Scale to n=16 (headline domain, 65,536 inputs) | ⏳ planned |
 
 See [`docs/PROGRESS.md`](docs/PROGRESS.md) for results and [`docs/design.md`](docs/design.md)
@@ -43,13 +43,18 @@ genuinely requires the *order* check, not just a parenthesis count. The spec is
 ## Repository layout
 
 ```
-vcirc/          # the package: dyck.py (spec), model.py (TinyTransformer), train.py
+vcirc/          # the package:
+                #   dyck.py (spec) · model.py (TinyTransformer) · train.py
+                #   circuit.py (extracted symbolic circuit)
+                #   certify.py (Circuit == Model: v1 evidence + v2 proof)
+                #   exact.py (torch-free rigorous interval-arithmetic core)
+                #   export_weights.py (exact float.hex() weight export)
 models/         # exact trained checkpoints (tiny; committed for reproducibility)
-tests/          # pytest: spec vs Catalan; saved model is exact over full domain
-experiments/    # runnable experiment scripts + notes
+tests/          # pytest: spec vs Catalan; model exact; circuit == model certificate
+experiments/    # activation cache + probes (depth/violation/aggregation)
 docs/           # design.md (plan + the ownable gap), PROGRESS.md (results)
 proofs/         # (B) Lean 4 project: Circuit == Spec       [scaffold]
-certificates/   # (A2) emitted Circuit == Model certificates [scaffold]
+certificates/   # (A2) emitted certificates + check.py (standalone re-verifier)
 ```
 
 ## Reproduce
@@ -58,16 +63,42 @@ certificates/   # (A2) emitted Circuit == Model certificates [scaffold]
 pip install -e .                 # torch (CPU) + this package
 python -m vcirc.train --n 10 --seeds 6     # train; saves an exact model to models/
 python -m pytest                 # spec correctness + saved model is exact
+
+# A2 — certify Circuit == Model over the whole domain
+python -m vcirc.certify --rung v1                  # exhaustive float32 evidence
+python -m vcirc.certify --rung v2 --jobs 4         # rigorous rational margin bound
+python certificates/check.py \
+    certificates/dyck10_exact_seed0.v2.cert.json   # torch-free re-verification
 ```
 
 ## What must you trust?
 
-The design separates trust levels deliberately:
-- **Kernel-checked (B):** `Circuit == Spec` — a Lean theorem; trust only the Lean kernel.
-- **Exhaustively checked (A2):** `Circuit == Model` (argmax) on all inputs — a
-  certificate re-checkable by a tiny standalone script in exact arithmetic.
-- **Stated honestly:** we certify the *trained (optionally rounded) model*; the
-  float→rounded bridge is a separate, optional step.
+We certify the **deployed model directly**: float32 weights are exact dyadic
+rationals and the inputs are integers, so there is no "rounded model" to bridge
+to. The guarantee has two independently-checkable halves.
+
+- **`Circuit == Model`** (Milestone A2, shipped). The *exact-real function*
+  defined by the weights has `argmax == Circuit.eval(x)` with a strictly positive
+  decision margin on **every** input — proven by rigorous interval arithmetic
+  (rational endpoints, directed/outward rounding; the only transcendental, `exp`
+  in the two attention softmaxes, is enclosed by a Taylor+remainder bound; the
+  attention scale `1/√dh = 1/4` is exact). The certificate states a rational
+  lower bound on the margin (≥ +6.3957 for `dyck10_exact_seed0`), and a tiny
+  standalone `certificates/check.py` re-verifies it **from the weight export
+  alone** — trusting only the Python standard library and the ~390-line interval
+  core (`vcirc/exact.py`); no torch, no training or extraction code. The deployed
+  *float32* run is separately corroborated **exhaustively** over the full domain
+  (the v1 certificate), so both the portable exact function and the literal
+  float32 execution are covered.
+- **`Circuit == Spec`** (Milestone B, planned). A Lean 4 theorem
+  `∀x, Circuit.eval x = Spec.eval x` proved by induction — trust only the Lean
+  kernel.
+
+Stated honestly: we do **not** claim "we proved a neural network is correct"
+unqualified. We claim the exact-real function these weights define is provably
+correct (margin > 0) on every input [portable, rigorous], and that the float32
+implementation reproduces those decisions exhaustively on the full finite domain.
+The novelty is the *mechanism + exact checkability*, not the accuracy number.
 
 ## License
 

@@ -77,3 +77,70 @@ def test_certify_rejects_a_tampered_circuit(monkeypatch):
     monkeypatch.setattr(certify.Circuit, "eval", staticmethod(broken))
     with pytest.raises(AssertionError):
         certify.certify(model_path, write=False)
+
+
+# --------------------------------------------------------------------------- #
+# v2 (rigorous interval arithmetic)
+# --------------------------------------------------------------------------- #
+from vcirc import exact  # noqa: E402
+
+
+def _weights_for(model_path):
+    model = certify.load_model(model_path)
+    sd = {k: v.tolist() for k, v in model.state_dict().items()}
+    return exact.Weights(model.cfg, sd), model
+
+
+@pytest.mark.parametrize("model_path", _exact_models())
+def test_exact_interval_encloses_float64_and_margin_positive(model_path):
+    # On a subset of the domain: the rigorous interval must enclose a float64
+    # recompute, and the margin lower bound must be positive with the right sign.
+    exact.set_precision(96)
+    W, model = _weights_for(model_path)
+    n = model.cfg["n"]
+    strings = list(dyck.enumerate_all(n))
+    mdouble = certify.load_model(model_path).double()
+    sub = strings[::17]  # spread across the domain
+    Xs = torch.tensor(sub, dtype=torch.long)
+    with torch.no_grad():
+        L = mdouble(Xs).numpy()
+    for k, s in enumerate(sub):
+        g = exact.gap_interval(W, s)
+        assert g.lo <= g.hi
+        gap64 = float(L[k, 1] - L[k, 0])
+        assert float(g.lo) - 1e-9 <= gap64 <= float(g.hi) + 1e-9
+        mlo, _ = exact.margin_lower_bound(W, s, dyck.is_valid(s))
+        assert mlo > 0
+
+
+def test_exp_enclosure_is_rigorous():
+    # exp bounds must bracket math.exp at a range of rational arguments.
+    import math
+    from fractions import Fraction
+    exact.set_precision(96)
+    for val in (-7.5, -1.0, 0.0, 0.3, 2.0, 9.25):
+        X = int(Fraction(val) * exact._SCALE)
+        lo_i, hi_i = exact.exp_bounds(X)
+        lo, hi = lo_i / exact._SCALE, hi_i / exact._SCALE
+        assert lo <= math.exp(val) <= hi
+        assert hi - lo < 1e-12  # tight
+
+
+def test_v2_certificate_file_is_consistent():
+    # The committed v2 certificate must be internally consistent and pin a
+    # weights export whose hash still matches.
+    path = os.path.join(ROOT, "certificates", "dyck10_exact_seed0.v2.cert.json")
+    if not os.path.exists(path):
+        pytest.skip("v2 certificate not generated yet")
+    with open(path) as f:
+        cert = json.load(f)
+    assert cert["rung"] == "v2-exact"
+    assert cert["argmax_equals_circuit_all_inputs"] is True
+    mm = cert["min_margin_lower_bound"]
+    assert mm["float"] > 0
+    from fractions import Fraction
+    assert abs(float(Fraction(mm["fraction"][0], mm["fraction"][1])) - mm["float"]) < 1e-9
+    wpath = os.path.join(ROOT, cert["weights_export"])
+    assert certify.sha256_file(wpath) == cert["weights_export_sha256"]
+    for k in ("model_sha256", "circuit_sha256", "verifier_core_sha256"):
+        assert len(cert[k]) == 64

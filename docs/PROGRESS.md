@@ -67,3 +67,49 @@ domain for n ≤ 14 (Catalan-verified). The substantive A2 claim — that the tr
 
 **Verdict:** A2a passed. Next: A2b — exhaustive, exact-arithmetic
 `Circuit == Model` certificate.
+
+## 2026-06-14 — A2b: Circuit == Model certificate ✅
+
+**Claim certified:** for every input `x ∈ {0,1}^10`, the model's argmax decision
+equals `Circuit.eval(x)` with a strictly positive decision margin.
+
+Two rungs, both passing on `dyck10_exact_seed0` (1,024 inputs):
+
+- **v1 (evidence):** the deployed float32 model, run over the full domain.
+  Agreement on all 1,024 inputs; confusion perfectly diagonal (42 valid / 982
+  invalid); empirical min margin **+6.3957** at `0001011110`.
+  `vcirc/certify.py` refuses to emit on any disagreement (the moment of truth).
+- **v2 (proof — the differentiator):** the *exact-real function* defined by the
+  weights, evaluated in **rigorous interval arithmetic**. A rational lower bound
+  on the margin is **strictly positive on every input**: min **≥ +6.3957** (=
+  `506717081843543320754521061633 / 2^96`). `argmax == circuit` on all inputs.
+
+**Why v2 is tractable / honest about method.** Weights are exact dyadic rationals
+(float32), inputs are integers, and the attention scale `1/√dh = 1/4` is exact —
+so the *only* transcendental in the decision path is `exp` inside the two
+softmaxes, enclosed by a Taylor+remainder bound. After the first softmax the
+computation is interval-valued (rational endpoints). To stop numerator/
+denominator bit-sizes ballooning through the two layers, endpoints are rounded
+**outward** to a fixed dyadic precision (96 bits) — a *verified enclosure*, not
+exact rationals, but still a rigorous lower bound. Endpoint size stayed bounded
+at **105 bits** (no blow-up); a fully-exact `Fraction` forward was confirmed to
+explode in bit-size, which is why fixed-precision interval arithmetic is used.
+
+**Engineering note.** The interval core is fixed-point integer arithmetic in
+units of `2^-96` (`vcirc/exact.py`), ~180 ms/input single-threaded (~13× faster
+than naive `Fraction`); generation runs in parallel.
+
+**Trust surface.** Weights are exported as exact `float.hex()`; a standalone
+`certificates/check.py` re-verifies the rational margin lower bound from the
+weight export alone, depending only on the Python stdlib + the ~390-line
+`vcirc/exact.py` core — no torch, no training/extraction code. The deployed
+float32 execution is corroborated exhaustively by v1.
+
+**Framing (carried forward).** The certificate proves the *exact-real function*
+defined by the weights is correct (margin > 0) on every input [portable]; the
+float32 implementation reproduces those decisions exhaustively [v1]. We do not
+claim "we proved a neural network is correct" unqualified. The novelty is the
+mechanism + exact checkability, not the 100% accuracy.
+
+**Verdict:** A2b passed — A2 complete. Next: Milestone B (Lean 4 proof
+`∀x, Circuit.eval x = Spec.eval x` by induction), then scale to n=16.
