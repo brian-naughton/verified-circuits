@@ -2,6 +2,11 @@
 
 **Kernel-checkable mechanistic circuits for learned transformers.**
 
+> **▶ Start here: [the explainer notebook](explainer.ipynb)** — an executed,
+> figure-rich walkthrough (trained model → extracted circuit → the mechanism made
+> visual → the certificate running → the Lean theorem → the trust story → *verify
+> it yourself*). Reads top-to-bottom on GitHub with all outputs inline.
+
 Train a tiny transformer on a *complete finite task*, reverse-engineer it into a
 human-readable symbolic **circuit**, and ship independently-checkable evidence
 that

@@ -56,6 +56,27 @@ object. We corroborate it four ways, and say so honestly:
    cited Python line numbers;
 4. every Lean definition cites the Python lines it mirrors.
 
+## Isn't `Circuit == Spec` trivial, since you wrote both?
+
+Largely, yes — and that's fine; saying so is more honest than hiding it. The
+circuit is a *deliberately simple re-expression of the same algorithm* (running
+depth → per-position violation flag → aggregate), so `Circuit == Spec` is close to
+true *by construction*. Its value is not surprise; it is:
+
+1. it is the **length-generic, kernel-checked half** — proved for *all* lengths at
+   once, not per-n;
+2. it **rigorously rules out any subtle discrepancy** between the two formal
+   objects (an off-by-one in the prefix test, a wrong aggregation) — exactly the
+   kind of bug that silently invalidates an "obvious" equivalence;
+3. it **anchors the `Spec` end of the chain**, and the spec itself is validated
+   against the Catalan ground truth (above), so the chain is pinned to *what
+   Dyck-1 mathematically is*, not merely to our Python.
+
+The empirical **substance — the genuinely non-obvious part — is `Circuit ==
+Model`**: that a *trained neural network*, to the last bit of its decision on every
+one of 65,536 inputs, implements *this* circuit, plus the probed internal mechanism
+that shows it does so for the reasons the circuit claims.
+
 ## Three corroboration claims — don't conflate them
 
 The interval certificate's **soundness is analytic**: every operation in
@@ -93,6 +114,11 @@ bound from the weight export alone, and confirms the hash the certificate pinned
 Its default is a single-threaded, trivially auditable loop; `--jobs` is an optional
 accelerator running the *same* exact-integer core (bit-identical, order-independent).
 
+**Runtime:** the n=10 re-check takes ~minutes; the n=16 re-check redoes the full
+rigorous interval forward over all 65,536 inputs, so it takes **~hours** even with
+`--jobs` (it's a one-time independent confirmation, not something you need to run to
+*use* the repo). The Lean `lake build` is seconds.
+
 ## How is this different from prior work?
 
 - **Gross, Agrawal et al., _Compact Proofs of Model Performance via MI_ (NeurIPS
@@ -105,6 +131,14 @@ accelerator running the *same* exact-integer core (bit-identical, order-independ
   reproducible artifact a skeptic can re-verify without trusting our Python. The
   ownable phrase: *a kernel-checked mechanistic circuit for a learned transformer
   on a complete finite language task.*
+
+**The trade we make, stated plainly:** we trade *task complexity* for *guarantee
+strength* — a total, exact `Spec == Circuit == Model` equivalence over a *complete
+finite domain*, rather than performance/accuracy bounds on a larger, more realistic
+task (Gross et al.) or robustness/minimality on continuous vision inputs (Hadad et
+al.). A reviewer will think it; we own it. The bet is that an end-to-end *equivalence
+you can re-verify from the kernel up* is a complementary point in the design space,
+and a useful template for scaling the same discipline to harder tasks.
 
 ## Honest limitations
 
