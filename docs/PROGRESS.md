@@ -113,3 +113,55 @@ mechanism + exact checkability, not the 100% accuracy.
 
 **Verdict:** A2b passed — A2 complete. Next: Milestone B (Lean 4 proof
 `∀x, Circuit.eval x = Spec.eval x` by induction), then scale to n=16.
+
+## 2026-06-14 — Milestone B: Circuit == Spec, kernel-checked ✅
+
+**Claim proved (Lean 4, kernel-checked):** the extracted circuit equals the Dyck-1
+spec on **every input of every length**:
+
+```lean
+theorem circuit_eq_spec (s : List Tok) : Circuit.valid s = Spec.isValid s
+```
+
+**Method — structural induction, not enumeration.** Both sides are the same
+conjunction `finalDepth == 0 ∧ <order condition>` over the same running-depth
+sequence, so two facts carry the theorem (`proofs/VerifiedCircuits/Equiv.lean`):
+
+- `finalDepth_eq` — the circuit's running accumulator depth equals the spec's
+  summed final depth.
+- the two order conditions coincide, both equal to "every running prefix depth
+  ≥ 0" (`allNonnegFrom`): `Circuit.violationCountFrom_eq_zero_iff` (the circuit's
+  `violation_count == 0`) and `Spec.minPrefixFrom_nonneg_iff` (the spec's
+  `min_prefix_depth ≥ 0`), each proved by induction with the running depth
+  generalised. `omega` discharges the per-step integer arithmetic.
+
+Because the proof is inductive over `List Tok`, it covers the headline n=16 domain
+(and every other length) for free — there is no per-n enumeration.
+
+**Faithfulness.** The Lean `Spec`/`Circuit` are line-referenced images of
+`vcirc/dyck.py` / `vcirc/circuit.py`. The build cross-checks the translation: the
+Lean spec reproduces the Catalan profile `[1,0,1,0,2,0,5,0,14,0,42]` (n = 0..10),
+and circuit == spec on every string up to length 12.
+
+**Trust surface.** Only the Lean kernel + `propext`, `Quot.sound`:
+`#print axioms circuit_eq_spec` prints exactly `[propext, Quot.sound]` — **no
+`sorryAx`, no `Lean.ofReduceBool`** (so no `native_decide`), and **no Mathlib**
+(Lean core only; `lake build` completes in seconds). The Mathlib-free choice is
+for build speed, reproducibility, and a small auditable artifact — **not**
+soundness: Lean's kernel checks Mathlib developments just the same.
+
+**Adversarial review (Codex / GPT-5.5).** Independently checked faithfulness
+(line-by-line vs `dyck.py`/`circuit.py`: token encoding, increment-then-test
+order, min init at 0, sum-as-final-depth — no off-by-one), non-vacuity (genuine
+all-length equality of the exported decision functions; n=16 is a subset), and
+rigor (structural induction, no `native_decide`/`sorry`/custom axiom; reproduced
+the green build). Verdict: no flaw. One honesty note adopted — the trust story now
+states the domain is the model's binary `{(, )}` token alphabet (see
+`proofs/README.md` §Scope).
+
+**Verdict:** Milestone B passed. The chain `Spec == Circuit == Model` is now
+complete — B gives `Spec == Circuit` (kernel-checked, all lengths); A2 gives
+`Circuit == Model` (exhaustive rigorous-rational certificate, n=10). Next: scale
+to n=16 for the A2 certificate, then the pre-publish checklist.
+
+Reproduce: `cd proofs && lake build`.

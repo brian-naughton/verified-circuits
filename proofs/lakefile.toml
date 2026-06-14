@@ -1,0 +1,7 @@
+name = "VerifiedCircuits"
+defaultTargets = ["VerifiedCircuits"]
+
+# Lean core only — NO Mathlib, NO Batteries/Std dependencies.
+
+[[lean_lib]]
+name = "VerifiedCircuits"

@@ -27,7 +27,7 @@ Python.** That is the gap this repo targets.
 |---|---|
 | **A1** — a tiny transparent transformer learns the task to *exact 100%* over the full domain, positive margins | ✅ done (Dyck-1, n=10 & n=12, all seeds) |
 | **A2** — extract a symbolic circuit; certify `Circuit == Model` argmax on every input | ✅ done (mechanism probed; rigorous rational margin ≥ +6.3957 on all 1,024 inputs) |
-| **B** — Lean 4 proof `∀x, Circuit.eval x = Spec.eval x` (by induction) | ⏳ next |
+| **B** — Lean 4 proof `∀ s, Circuit.valid s = Spec.isValid s` (by induction) | ✅ done (kernel-checked, Lean core only; axioms `[propext, Quot.sound]`) |
 | Scale to n=16 (headline domain, 65,536 inputs) | ⏳ planned |
 
 See [`docs/PROGRESS.md`](docs/PROGRESS.md) for results and [`docs/design.md`](docs/design.md)
@@ -90,9 +90,14 @@ to. The guarantee has two independently-checkable halves.
   *float32* run is separately corroborated **exhaustively** over the full domain
   (the v1 certificate), so both the portable exact function and the literal
   float32 execution are covered.
-- **`Circuit == Spec`** (Milestone B, planned). A Lean 4 theorem
-  `∀x, Circuit.eval x = Spec.eval x` proved by induction — trust only the Lean
-  kernel.
+- **`Circuit == Spec`** (Milestone B, shipped). A Lean 4 theorem
+  `∀ s, Circuit.valid s = Spec.isValid s` proved by **structural induction** (not
+  enumeration), so it holds for every length — the headline n=16 domain and all
+  others. `lake build` checks it and `#print axioms` reports only `propext,
+  Quot.sound` (no `sorry`, no `native_decide`, no Mathlib — Lean core only), so a
+  skeptic trusts only the Lean kernel. Reproduce: `cd proofs && lake build`. The
+  Mathlib-free build is a speed/reproducibility/auditability choice, not a
+  soundness one (the kernel checks Mathlib just the same).
 
 Stated honestly: we do **not** claim "we proved a neural network is correct"
 unqualified. We claim the exact-real function these weights define is provably
