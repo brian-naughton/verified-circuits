@@ -28,7 +28,7 @@ Python.** That is the gap this repo targets.
 | **A1** — a tiny transparent transformer learns the task to *exact 100%* over the full domain, positive margins | ✅ done (Dyck-1, n=10 & n=12, all seeds) |
 | **A2** — extract a symbolic circuit; certify `Circuit == Model` argmax on every input | ✅ done (mechanism probed; rigorous rational margin ≥ +6.3957 on all 1,024 inputs) |
 | **B** — Lean 4 proof `∀ s, Circuit.valid s = Spec.isValid s` (by induction) | ✅ done (kernel-checked, Lean core only; axioms `[propext, Quot.sound]`) |
-| Scale to n=16 (headline domain, 65,536 inputs) | ⏳ planned |
+| Scale to n=16 (headline domain, 65,536 inputs) | ✅ done (exact 100%; `Circuit == Model` rigorous margin ≥ +8.0950 on all 65,536) |
 
 See [`docs/PROGRESS.md`](docs/PROGRESS.md) for results and [`docs/design.md`](docs/design.md)
 for the full plan.
@@ -101,7 +101,9 @@ to exactly one of them — we name all three so a sharp reviewer doesn't have to
   `certificates/check.py` re-verifies it **from the weight export alone** (Python
   stdlib + the ~390-line `vcirc/exact.py` core; no torch, no training/extraction
   code). The literal *float32* run is corroborated **exhaustively** by the v1
-  certificate. Currently certified at **n=10**.
+  certificate. Certified at **n=10** (margin ≥ +6.3957) and the headline
+  **n=16** (full 65,536-input domain, rigorous margin ≥ +8.0950, endpoint bits
+  ≤ 108 at 96-bit precision).
 - **Lean/Python defs ↔ the same algorithm** (the transcription). The Lean
   `Spec`/`Circuit` are faithful images of `vcirc/dyck.py`/`vcirc/circuit.py` — but
   this link is **corroborated, not formally proven** (Python is not a formal
