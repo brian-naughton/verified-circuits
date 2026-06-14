@@ -100,7 +100,12 @@ def test_exact_interval_encloses_float64_and_margin_positive(model_path):
     n = model.cfg["n"]
     strings = list(dyck.enumerate_all(n))
     mdouble = certify.load_model(model_path).double()
-    sub = strings[::17]  # spread across the domain
+    # bounded spot-check: ~64 inputs spread across the domain, so the (heavy)
+    # interval forward cost stays n-independent (at n=16, strings[::17] would be
+    # ~3,855 inputs / ~24 min). The full-domain n=16 enclosure is established by
+    # the v2 certificate + the torch-free re-check + experiments/validate_exact.py.
+    step = max(1, len(strings) // 64)
+    sub = strings[::step]
     Xs = torch.tensor(sub, dtype=torch.long)
     with torch.no_grad():
         L = mdouble(Xs).numpy()
