@@ -98,6 +98,9 @@ def main():
     ap.add_argument("--trainfrac", type=float, default=0.85)
     ap.add_argument("--progress", action="store_true",
                     help="print per-seed training loss ~10x over the run")
+    ap.add_argument("--force", action="store_true",
+                    help="allow overwriting an existing models/ checkpoint "
+                         "(cert-pinned models are read-only by default)")
     ap.add_argument("--lr", type=float, default=3e-3)
     ap.add_argument("--seeds", type=int, default=6)
     args = ap.parse_args()
@@ -116,7 +119,17 @@ def main():
     print(f"\nBEST: seed {s}  {w} wrong  min-margin {m:+.3f}")
     if w == 0:
         os.makedirs(MODELS_DIR, exist_ok=True)
-        path = os.path.join(MODELS_DIR, f"dyck{args.n}_exact_seed{s}.pt")
+        name = f"dyck{args.n}_exact_seed{s}.pt"
+        path = os.path.join(MODELS_DIR, name)
+        # Cert-pinned models in models/ are effectively read-only (a v2 certificate
+        # verifies against their SHA256). Don't let a scratch/sweep run silently
+        # clobber one — redirect to models/scratch/ unless --force is given.
+        if os.path.exists(path) and not args.force:
+            scratch = os.path.join(MODELS_DIR, "scratch")
+            os.makedirs(scratch, exist_ok=True)
+            path = os.path.join(scratch, name)
+            print(f"  ({name} already exists and is treated as read-only; saving to "
+                  f"models/scratch/ instead — pass --force to overwrite intentionally)")
         torch.save({"state_dict": model.state_dict(), "cfg": model.cfg}, path)
         print(f"saved exact model -> {path}  (exact 100% full-domain, positive margin)")
 

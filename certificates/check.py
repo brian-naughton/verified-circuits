@@ -19,6 +19,13 @@ core):
 
 It does NOT import torch, numpy, or any training/extraction code. The "what must
 you trust?" surface is: this file, ``vcirc/exact.py``, and the Python stdlib.
+
+By default the re-check is a single-threaded, trivially auditable loop — a
+stranger runs the simple thing. ``--jobs=N`` is an optional *accelerator* that
+fans the identical per-input core (``exact.margin_lower_bound``) across N
+processes; because the arithmetic is exact integer arithmetic, the result is
+bit-identical and order-independent — parallelism changes wall-clock only, not
+what is computed or what is trusted. (Use it for the 65,536-input n=16 domain.)
 """
 import hashlib
 import itertools
@@ -53,7 +60,7 @@ def circuit_valid(tokens) -> bool:
     return depth == 0 and violations == 0
 
 
-def check(cert_path: str) -> int:
+def check(cert_path: str, jobs: int = 1) -> int:
     with open(cert_path) as f:
         cert = json.load(f)
     cert_dir = os.path.dirname(os.path.abspath(cert_path))
@@ -72,34 +79,54 @@ def check(cert_path: str) -> int:
     print(f"[1/4] weights export hash OK ({actual[:16]}...)")
 
     # 2. reconstruct exact weights from the hex export (no torch)
-    W = exact.Weights.from_hex_export(weights_path)
+    with open(weights_path) as f:
+        blob = json.load(f)
+    cfg = blob["cfg"]
+    sd = {name: exact._hex_to_float(v) for name, v in blob["state_dict_hex"].items()}
+    W = exact.Weights(cfg, sd)
     n = W.n
     print(f"[2/4] reconstructed exact weights (n={n}, d={W.d}, "
           f"scale 1/sqrt(dh)={W.scale})")
 
-    # 3 + 4. re-derive circuit + rigorous margin lower bound on every input
-    exact.set_precision(int(cert["interval_precision_bits"]))
+    # 3 + 4. re-derive circuit + rigorous margin lower bound on every input.
+    # The default is a single-threaded, trivially auditable loop. `jobs > 1` fans
+    # the SAME per-input core (exact.margin_lower_bound, via exact.verify_domain)
+    # across processes so the 65,536-input n=16 domain re-checks in minutes, not
+    # hours — same computation, same trust surface (check.py + exact.py + stdlib).
+    precision = int(cert["interval_precision_bits"])
+    exact.set_precision(precision)
     claimed = float(cert["min_margin_lower_bound"]["float"])
     domain = list(itertools.product((0, 1), repeat=n))
     if len(domain) != cert["domain_size"]:
         print(f"ERROR: domain size mismatch {len(domain)} != {cert['domain_size']}")
         return 1
 
-    worst = None
-    worst_input = None
-    max_bits = 0
-    for tokens in domain:
-        c = circuit_valid(tokens)
-        mlo, g = exact.margin_lower_bound(W, tokens, c)
-        max_bits = max(max_bits, g.max_bits())
-        if mlo <= 0:
-            print(f"ERROR: non-positive margin lower bound at "
-                  f"{''.join(map(str, tokens))}: {float(mlo)}")
+    if jobs and jobs > 1:
+        items = [(tokens, circuit_valid(tokens)) for tokens in domain]
+        res = exact.verify_domain(cfg, sd, items, precision=precision, jobs=jobs)
+        worst = res["min_margin"]
+        worst_input = domain[res["argmin_index"]]
+        max_bits = res["max_bits"]
+        if not res["all_positive"] or worst <= 0:
+            print(f"ERROR: non-positive margin lower bound (min {float(worst)})")
             return 1
-        if worst is None or mlo < worst:
-            worst = mlo
-            worst_input = tokens
-    print(f"[3/4] circuit re-derived + margins recomputed on all {len(domain)} inputs")
+    else:
+        worst = None
+        worst_input = None
+        max_bits = 0
+        for tokens in domain:
+            c = circuit_valid(tokens)
+            mlo, g = exact.margin_lower_bound(W, tokens, c)
+            max_bits = max(max_bits, g.max_bits())
+            if mlo <= 0:
+                print(f"ERROR: non-positive margin lower bound at "
+                      f"{''.join(map(str, tokens))}: {float(mlo)}")
+                return 1
+            if worst is None or mlo < worst:
+                worst = mlo
+                worst_input = tokens
+    print(f"[3/4] circuit re-derived + margins recomputed on all {len(domain)} inputs"
+          f"{f' ({jobs} jobs)' if jobs and jobs > 1 else ''}")
 
     # the recomputed worst-case bound must (re)confirm the certificate's claim
     if abs(float(worst) - claimed) > 1e-9:
@@ -116,11 +143,17 @@ def check(cert_path: str) -> int:
 
 
 def main():
-    if len(sys.argv) != 2:
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    jobs = 1
+    for a in sys.argv[1:]:
+        if a.startswith("--jobs="):
+            jobs = int(a.split("=", 1)[1])
+    if len(args) != 1:
         print(__doc__)
-        print("usage: python certificates/check.py <certificate.v2.cert.json>")
+        print("usage: python certificates/check.py <certificate.v2.cert.json> "
+              "[--jobs=N]")
         return 2
-    return check(sys.argv[1])
+    return check(args[0], jobs=jobs)
 
 
 if __name__ == "__main__":
