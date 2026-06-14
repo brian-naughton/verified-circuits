@@ -164,4 +164,55 @@ complete — B gives `Spec == Circuit` (kernel-checked, all lengths); A2 gives
 `Circuit == Model` (exhaustive rigorous-rational certificate, n=10). Next: scale
 to n=16 for the A2 certificate, then the pre-publish checklist.
 
+## 2026-06-14 — n=16 scale-up: `Spec == Circuit == Model` at the headline scale ✅
+
+**Exact model.** A `d=32` model (causal · 2 layers · sum-pool · no LayerNorm — the
+A1 architecture, unchanged) trained to **exact 100% over the full 65,536-input
+domain**, single seed, first try, minibatched (`--batch 2048`); min decision
+margin **+8.095** — *stronger* than n=10 (+6.40) and n=12, so the feared
+margin-tightening at longer length did not occur. Saved `models/dyck16_exact_seed0.pt`.
+
+**`Circuit == Model` certified on every one of the 65,536 inputs.**
+
+| Rung | Result |
+|---|---|
+| v1 (float32 evidence) | argmax == circuit on all 65,536; confusion diagonal (1430 valid = Catalan(8) / 64,106 invalid); min margin +8.0951 |
+| v2 (rigorous interval proof) | min-margin lower bound **+8.095074** (= 320678931157985547263444506219 / 2^96), all inputs positive; 96-bit precision; endpoint bits ≤ **108** (n=10 was 105 — no blow-up at 6× the length); ~2 h on 6 cores |
+| torch-free re-check (`check.py --jobs=6`) | **VERIFIED** — reproduced +8.095074 from the weight export alone, stdlib + `vcirc/exact.py` only; ~1 h 56 m |
+
+Margin (+8.095) vs interval enclosure width (~1e-21): safety factor ~1e20, so
+96-bit precision was ample. Milestone B's Lean proof already covers n=16
+(length-generic), so **the full `Spec == Circuit == Model` chain now holds at the
+headline scale.**
+
+**Pre-publish corroborations (three cleanly-separated claims).** Certificate
+soundness is **analytic** (every `vcirc/exact.py` op rounds outward → rigorous
+enclosure by construction); the two empirical checks *corroborate*, they are not
+the guarantee:
+
+- **Purpose-1 — enclosure corroboration** (`experiments/validate_exact.py`, now
+  `--model` n-general): a high-precision float64 eval of the exact-real function
+  lies inside the v2 interval within float64's own error. n=10 fidelity 2.8e-14;
+  n=16 fidelity 3.3e-7; enclosure 23/23 sampled both; worst sampled margins match
+  the certs (+6.395669, +8.095074).
+- **Purpose-2 — float32 faithfulness** (`experiments/faithfulness.py`): (a)
+  decision agreement — float32 argmax == circuit on **every** input (full domain,
+  both n); (b) numerical fidelity — `|float32 gap − exact gap|` = 3.3e-5 (n=10),
+  2.7e-4 (n=16), within the 1e-3 float-error scale. (The enclosure width ~1e-21 is
+  far tighter than float32's ~1e-4 rounding, so a *literal* float32 ∈ [lo,hi]
+  containment is neither expected nor claimed — faithfulness = agreement + fidelity.)
+
+**Reviewer FAQ** (`docs/FAQ.md`): the three-link trust table; the three
+corroboration claims above; how to self-verify; the ownable gap vs Gross et al. /
+Hadad et al.; and honest limitations (tiny model / finite task; the transcription
+link is the one corroborated-not-proved seam; novelty = mechanism + exact
+checkability, not the accuracy number).
+
+**Verdict:** n=16 scale-up + pre-publish checklist done. Remaining before going
+public: the explainer / in-repo "preprint" (Leg 3 of `docs/N16-PLAN.md`, written
+last once all numbers are final), then set up the public remote.
+
+Reproduce: `python -m vcirc.certify --rung v2 --jobs 6 --model models/dyck16_exact_seed0.pt`
+then `python certificates/check.py certificates/dyck16_exact_seed0.v2.cert.json --jobs=6`.
+
 Reproduce: `cd proofs && lake build`.

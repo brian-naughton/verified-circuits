@@ -118,10 +118,14 @@ to exactly one of them — we name all three so a sharp reviewer doesn't have to
 Stated honestly: we do **not** claim "we proved a neural network is correct"
 unqualified. The circuit↔spec equivalence is kernel-proven for all lengths; the
 exact-real function these weights define provably makes the circuit's decision
-(margin > 0) on every input [n=10, portable, rigorous], with the float32 execution
-corroborated exhaustively; and the one unavoidable soft seam — that our Lean and
-Python transcribe the same algorithm — is corroborated, not proven. The novelty is
-the *mechanism + exact checkability*, not the accuracy number.
+(margin > 0) on every input [n=10 and n=16, portable, rigorous], with the float32
+execution corroborated exhaustively; and the one unavoidable soft seam — that our
+Lean and Python transcribe the same algorithm — is corroborated, not proven. The
+novelty is the *mechanism + exact checkability*, not the accuracy number.
+
+See [`docs/FAQ.md`](docs/FAQ.md) for the full reviewer FAQ — how to self-verify,
+the three corroboration claims, the ownable gap vs Gross et al. / Hadad et al., and
+honest limitations.
 
 ## License
 
