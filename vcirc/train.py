@@ -24,6 +24,18 @@ def make_domain(n):
     return X, y, strings
 
 
+def eval_full(model, X, batch):
+    """Model logits over the whole domain, minibatched if ``batch > 0`` (so the
+    65,536-input n=16 forward fits in memory). Equivalent to ``model(X)``."""
+    model.eval()
+    with torch.no_grad():
+        if batch and batch > 0:
+            logits = torch.cat([model(X[i:i + batch]) for i in range(0, len(X), batch)], 0)
+        else:
+            logits = model(X)
+    return logits
+
+
 def run_one(args, seed):
     torch.manual_seed(seed); random.seed(seed)
     X, y, strings = make_domain(args.n)
@@ -42,14 +54,28 @@ def run_one(args, seed):
     w = torch.tensor([N / (2 * (N - npos)), N / (2 * npos)], dtype=torch.float)
     lossf = nn.CrossEntropyLoss(weight=w)
 
-    for _ in range(args.epochs):
-        model.train(); opt.zero_grad()
-        loss = lossf(model(X[tr_t]), y[tr_t])
-        loss.backward(); opt.step(); sched.step()
+    every = max(1, args.epochs // 10) if args.progress else 0
+    for ep in range(args.epochs):
+        model.train()
+        if args.batch and args.batch > 0:
+            # minibatch one epoch over the training set (default off: batch=0)
+            perm = tr_t[torch.randperm(len(tr_t))]
+            for i in range(0, len(perm), args.batch):
+                bidx = perm[i:i + args.batch]
+                opt.zero_grad()
+                loss = lossf(model(X[bidx]), y[bidx])
+                loss.backward(); opt.step()
+            sched.step()
+        else:
+            opt.zero_grad()
+            loss = lossf(model(X[tr_t]), y[tr_t])
+            loss.backward(); opt.step(); sched.step()
+        if every and (ep % every == 0 or ep == args.epochs - 1):
+            print(f"    seed {seed} epoch {ep:4d}/{args.epochs}  loss {loss.item():.4f}",
+                  flush=True)
 
-    model.eval()
-    with torch.no_grad():
-        logits = model(X); pred = logits.argmax(1)
+    logits = eval_full(model, X, args.batch)
+    pred = logits.argmax(1)
     wrong = int((pred != y).sum())
     gap = (logits.gather(1, y[:, None]).squeeze(1)
            - logits.gather(1, (1 - y)[:, None]).squeeze(1))
@@ -66,7 +92,12 @@ def main():
     ap.add_argument("--pool", default="sum")
     ap.add_argument("--nocausal", action="store_true")
     ap.add_argument("--epochs", type=int, default=1500)
+    ap.add_argument("--batch", type=int, default=0,
+                    help="minibatch size for training/eval (0 = full-batch; "
+                         "use for large domains, e.g. 4096 at n=16)")
     ap.add_argument("--trainfrac", type=float, default=0.85)
+    ap.add_argument("--progress", action="store_true",
+                    help="print per-seed training loss ~10x over the run")
     ap.add_argument("--lr", type=float, default=3e-3)
     ap.add_argument("--seeds", type=int, default=6)
     args = ap.parse_args()
