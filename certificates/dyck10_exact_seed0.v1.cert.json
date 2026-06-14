@@ -1,0 +1,35 @@
+{
+  "agreement": true,
+  "arithmetic": "float32 (deployed torch model)",
+  "checker": "vcirc/certify.py",
+  "checker_sha256": "91e8d95e78125971bb27822613088b63acca3f41dc1fd5bd029031b4af52b527",
+  "checker_version": "a2b-v1-evidence",
+  "circuit_sha256": "9bc810decfabebf5e31221aba51aea26e2bb4c393877facf0caa0b1893ad31b1",
+  "circuit_source": "vcirc/circuit.py",
+  "claim": "for every input x in {0,1}^n, the model's argmax decision equals Circuit.eval(x) with a strictly positive margin (logit[circuit] - logit[other] > 0)",
+  "disagreements": 0,
+  "domain_size": 1024,
+  "generated_utc": "2026-06-14T14:44:24Z",
+  "mean_margin": 80.33959104009409,
+  "min_margin": 6.395672082901001,
+  "min_margin_input": "0001011110",
+  "model_file": "models/dyck10_exact_seed0.pt",
+  "model_sha256": "5e8822f35a800290a08739eb13ccd8edf0533ad8c55981069eee2204814b226a",
+  "n": 10,
+  "per_class": {
+    "circuit_invalid": 982,
+    "circuit_valid": 42,
+    "confusion_circuit_x_model": {
+      "invalid_invalid": 982,
+      "invalid_valid": 0,
+      "valid_invalid": 0,
+      "valid_valid": 42
+    },
+    "model_invalid": 982,
+    "model_valid": 42
+  },
+  "rung": "v1-evidence",
+  "spec_sha256": "eaf3a73921933744070a91f995cd93d9bc7a310a4a25e721230de5c43f4005b1",
+  "spec_source": "vcirc/dyck.py",
+  "task": "dyck1"
+}
