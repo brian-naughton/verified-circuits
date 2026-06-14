@@ -60,7 +60,7 @@ models/         # exact trained checkpoints (tiny; committed for reproducibility
 tests/          # pytest: spec vs Catalan; model exact; circuit == model certificate
 experiments/    # activation cache + probes (depth/violation/aggregation)
 docs/           # design.md (plan + the ownable gap), PROGRESS.md (results)
-proofs/         # (B) Lean 4 project: Circuit == Spec       [scaffold]
+proofs/         # (B) Lean 4 project: Circuit == Spec  (proved; `lake build` green)
 certificates/   # (A2) emitted certificates + check.py (standalone re-verifier)
 ```
 
@@ -88,7 +88,7 @@ to exactly one of them — we name all three so a sharp reviewer doesn't have to
 | Link | How | Trust level | Scope |
 |---|---|---|---|
 | `Circuit == Spec` | Lean 4 theorem, by induction | **kernel-proven** (Lean kernel + `propext`, `Quot.sound`) | **all lengths** |
-| `Circuit == Model` | rigorous interval-arithmetic certificate | machine-checked rational bound (stdlib + ~390-line interval core) | per-input, **n=10** |
+| `Circuit == Model` | rigorous interval-arithmetic certificate | machine-checked rational bound (stdlib + ~390-line interval core) | per-input, **n=10 & n=16** |
 | Lean/Python defs ↔ same algorithm | faithful transcription | **corroborated, not proven** | binary `{(, )}` alphabet |
 
 - **`Circuit == Spec`** (Milestone B). `∀ s, Circuit.valid s = Spec.isValid s`,
