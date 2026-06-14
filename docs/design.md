@@ -11,9 +11,9 @@ interpretability and formal verification, demonstrating:
 > **circuit**, with an end-to-end, independently-checkable guarantee that
 > `Spec == Circuit == Model` over the **entire** finite input domain.
 
-This sits under the `maths_problems` workspace; selection rationale (max impact ×
-hard checkability; career legibility for AI roles) is in
-`../HIGH_VALUE_PICKS.md`.
+The problem was chosen to be high-impact yet self-contained, exactly checkable,
+and useful to the community as open source — a target where *insight and exact
+verification* matter more than scale.
 
 ## The ownable gap
 
