@@ -12,7 +12,7 @@ holds by construction (and is proved in Lean in Milestone B), this makes the
 *model* provably exact on the whole domain — but the novelty is the mechanism +
 exact checkability, not the accuracy number.
 
-Rigour ladder (see `docs/A2-PLAN.md`):
+Rigour ladder (see `docs/FAQ.md`):
   * v1 (this module, evidence): the deployed float32 model is run; we report the
     empirical agreement and min margin. The moment of truth — if any input
     disagrees, the extracted circuit is not faithful and we stop.

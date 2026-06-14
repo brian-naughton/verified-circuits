@@ -7,7 +7,7 @@ EVERY input of EVERY length — proved by structural induction over the input, N
 by enumerating cases. (So it covers the headline n = 16 domain, and every other,
 for free.)
 
-Proof structure (see docs/B-PLAN.md):
+Proof structure:
   * the two `final_depth`s agree                              (`finalDepth_eq`)
   * both order conditions reduce to "every prefix depth >= 0":
       violation_count = 0   <->  allNonneg   (`violationCountFrom_eq_zero_iff`)

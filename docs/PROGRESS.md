@@ -208,9 +208,9 @@ Hadad et al.; and honest limitations (tiny model / finite task; the transcriptio
 link is the one corroborated-not-proved seam; novelty = mechanism + exact
 checkability, not the accuracy number).
 
-**Verdict:** n=16 scale-up + pre-publish checklist done. Remaining before going
-public: the explainer / in-repo "preprint" (Leg 3 of `docs/N16-PLAN.md`, written
-last once all numbers are final), then set up the public remote.
+**Verdict:** n=16 scale-up + pre-publish checklist done; the explainer / in-repo
+"preprint" was written last, once all numbers were final. The repository is now
+**public**.
 
 Reproduce: `python -m vcirc.certify --rung v2 --jobs 6 --model models/dyck16_exact_seed0.pt`
 then `python certificates/check.py certificates/dyck16_exact_seed0.v2.cert.json --jobs=6`.

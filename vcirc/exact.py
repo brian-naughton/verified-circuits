@@ -4,7 +4,7 @@ This re-implements `vcirc.model.TinyTransformer.forward` in **rigorous interval
 arithmetic** so we can *prove* (not just observe) that the decision margin is
 strictly positive on every input.
 
-Why this is tractable (see docs/A2-PLAN.md): the weights are exact dyadic
+Why this is tractable (see docs/design.md): the weights are exact dyadic
 rationals (float32), the inputs are exact integers, and the attention scale
 `1/sqrt(dh) = 1/4` is exact. The *only* transcendental in the decision path is
 `exp` inside the two attention softmaxes — and the argmax decision does not
