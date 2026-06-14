@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "verified-circuits: Kernel-Checkable Mechanistic Circuits for Learned Transformers"
+message: "If you use this work, please cite it."
+authors:
+  - family-names: Naughton
+    given-names: Brian
+date-released: 2026-06-14
+license: MIT
+abstract: >
+  A learned tiny transformer is reverse-engineered into a human-readable
+  symbolic circuit, with independently-checkable evidence that the spec, the
+  circuit, and the trained model agree over the entire finite input domain:
+  a Lean-kernel proof that the circuit equals the task specification, and an
+  exhaustive certificate that the trained model's decisions match the circuit
+  on every input with a positive margin.
+keywords:
+  - mechanistic interpretability
+  - formal verification
+  - transformers
+  - AI safety
