@@ -61,9 +61,9 @@ object. We corroborate it four ways, and say so honestly:
 Largely, yes — and that's fine; saying so is more honest than hiding it. The
 circuit is a *deliberately simple re-expression of the same algorithm* (running
 depth → per-position violation flag → aggregate), so `Circuit == Spec` is close to
-true *by construction*. Its value is not surprise; it is:
+true *by construction*. Its value isn't surprise — it's threefold:
 
-1. it is the **length-generic, kernel-checked half** — proved for *all* lengths at
+1. it's the **length-generic, kernel-checked half** — proved for *all* lengths at
    once, not per-n;
 2. it **rigorously rules out any subtle discrepancy** between the two formal
    objects (an off-by-one in the prefix test, a wrong aggregation) — exactly the
