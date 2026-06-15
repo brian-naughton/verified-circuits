@@ -15,16 +15,16 @@ The problem was chosen to be high-impact yet self-contained, exactly checkable,
 and useful to the community as open source — a target where *insight and exact
 verification* matter more than scale.
 
-## The ownable gap
+## Relation to prior work
 
 - Gross, Agrawal et al., *Compact Proofs of Model Performance via MI*
   (NeurIPS 2024) — compact formal **performance lower bounds** (Max-of-K).
 - Hadad, Katz, Bassan (2026) — verifier-certified circuit **robustness /
   minimality** (vision, continuous domains).
-- **Us:** kernel-checked **circuit↔spec equivalence** for a *learned algorithm*,
-  total finite-domain `Spec == Circuit == Model`, shipped as a reproducible
-  artefact. Phrase to own: *"a kernel-checked mechanistic circuit for a learned
-  transformer on a complete finite language task."*
+- **This work:** kernel-checked **circuit↔spec equivalence** for a *learned
+  algorithm*, total finite-domain `Spec == Circuit == Model`, shipped as a
+  reproducible artefact. In one line: *"a kernel-checked mechanistic circuit for a
+  learned transformer on a complete finite language task."*
 
 ## Task
 

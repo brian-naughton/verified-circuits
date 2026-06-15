@@ -203,7 +203,7 @@ the guarantee:
   containment is neither expected nor claimed — faithfulness = agreement + fidelity.)
 
 **Reviewer FAQ** (`docs/FAQ.md`): the three-link trust table; the three
-corroboration claims above; how to self-verify; the ownable gap vs Gross et al. /
+corroboration claims above; how to self-verify; how it differs from Gross et al. /
 Hadad et al.; and honest limitations (tiny model / finite task; the transcription
 link is the one corroborated-not-proved seam; novelty = mechanism + exact
 checkability, not the accuracy number).

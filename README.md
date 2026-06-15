@@ -59,7 +59,7 @@ vcirc/          # the package:
 models/         # exact trained checkpoints (tiny; committed for reproducibility)
 tests/          # pytest: spec vs Catalan; model exact; circuit == model certificate
 experiments/    # activation cache + probes (depth/violation/aggregation)
-docs/           # design.md (plan + the ownable gap), PROGRESS.md (results)
+docs/           # design.md (plan + relation to prior work), PROGRESS.md (results)
 proofs/         # (B) Lean 4 project: Circuit == Spec  (proved; `lake build` green)
 certificates/   # (A2) emitted certificates + check.py (standalone re-verifier)
 ```
@@ -132,7 +132,7 @@ Lean and Python transcribe the same algorithm — is corroborated, not proven. T
 novelty is the *mechanism + exact checkability*, not the accuracy number.
 
 See [`docs/FAQ.md`](docs/FAQ.md) for the full reviewer FAQ — how to self-verify,
-the three corroboration claims, the ownable gap vs Gross et al. / Hadad et al., and
+the three corroboration claims, how it differs from Gross et al. / Hadad et al., and
 honest limitations.
 
 ## License

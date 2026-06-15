@@ -43,7 +43,7 @@ ends with how to **verify it yourself**.
 without running anything, or re-run the light path (see the last section).*"""))
 
 # ----------------------------------------------------------------------------- #
-cells.append(md(r"""## 1. The problem, and the ownable gap
+cells.append(md(r"""## 1. The problem, and the gap it targets
 
 **Dyck-1.** Tokens `(`=0, `)`=1. A string is *valid* iff its running depth never
 goes negative and ends at 0 — so it genuinely needs the **order** check, not just a
@@ -55,7 +55,7 @@ Gross, Agrawal et al. (NeurIPS 2024) prove compact *performance lower bounds*;
 Hadad, Katz, Bassan (2026) certify circuit *robustness/minimality*. Neither ships a
 **kernel-checked circuit-to-spec _equivalence_ for a learned algorithm over the
 whole finite domain**, as a reproducible artifact. That total
-`Spec == Circuit == Model` is what this repo owns. (The trade, stated plainly: we
+`Spec == Circuit == Model` is what this repo delivers. (The trade, stated plainly: we
 buy *guarantee strength* with *task simplicity* — see `docs/FAQ.md`.)"""))
 
 cells.append(code(r"""%matplotlib inline

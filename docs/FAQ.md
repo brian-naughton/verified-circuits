@@ -129,7 +129,7 @@ rigorous interval forward over all 65,536 inputs, so it takes **~hours** even wi
 - **This repo.** Kernel-checked **circuit↔spec _equivalence_** for a *learned
   algorithm*, a total finite-domain `Spec == Circuit == Model`, shipped as a
   reproducible artifact a skeptic can re-verify without trusting our Python. The
-  ownable phrase: *a kernel-checked mechanistic circuit for a learned transformer
+  one-line version: *a kernel-checked mechanistic circuit for a learned transformer
   on a complete finite language task.*
 
 **The trade we make, stated plainly:** we trade *task complexity* for *guarantee
