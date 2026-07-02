@@ -153,7 +153,7 @@ This repository was executed AI-first: Claude (Anthropic) operated as the resear
 
 **Peer review is genuinely invited.** If you find an error — in the mathematics, the code, the Lean statements, or the framing — please open an issue; corrections and failed replications are the most useful contributions this project can receive.
 
-I am also looking for AI research-engineering roles: [Brian Naughton on LinkedIn](https://www.linkedin.com/in/bnaughton/).
+I am also looking for AI research and engineering roles: [Brian Naughton on LinkedIn](https://www.linkedin.com/in/bnaughton/).
 
 ## License
 
