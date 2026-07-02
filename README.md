@@ -1,6 +1,6 @@
-# verified-circuits
-
 ![Spec == Circuit == Model — a kernel-checked mechanistic circuit for a learned transformer, verified on every one of 65,536 inputs](assets/social-card.png)
+
+# verified-circuits
 
 **Kernel-checkable mechanistic circuits for learned transformers.**
 
