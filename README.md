@@ -18,6 +18,14 @@ that
 — not on sampled prompts, but on *every* input, with a positive decision margin,
 backed by a kernel-checked proof of the circuit↔spec half.
 
+## In plain English
+
+We take a tiny transformer, trained from scratch on a complete finite language task — bracket matching over *every* input up to length 16 — and close the full chain of guarantees around it. A machine-checked Lean proof shows that the symbolic circuit we extracted computes the task's specification for *all* lengths, and a rigorous interval-arithmetic certificate shows that the circuit reproduces the trained model's decision on every one of the 65,536 inputs. Both halves are re-checkable by anyone, from the artefacts alone, without trusting our code or any machine-learning library.
+
+Why it matters: interpretability claims are usually sampled and statistical — "the model does X on the prompts we tried". This is a working demonstration that, in the right setting, such claims can instead be *theorems and certificates*: statements that hold over the whole domain and that a sceptic can verify for themselves.
+
+Said plainly and honestly: the model is deliberately tiny and the task deliberately simple. The contribution is not scale — it is the complete, checkable chain from specification to circuit to trained weights, with each link's trust level named.
+
 ## Why this is different
 
 Recent work pairs mechanistic interpretability with formal guarantees —
@@ -27,6 +35,10 @@ certify circuit *robustness / minimality*. Neither ships a **kernel-checked
 circuit-to-spec *equivalence* for a learned algorithm over the whole finite
 domain, as a reproducible artefact a skeptic can verify without trusting our
 Python.** That is the gap this repo targets.
+
+## Follow-on work
+
+The same approach was subsequently carried over to a model we did **not** train: the published [Nanda et al. modular-addition "grokking" checkpoint](https://github.com/brian-naughton/certified-grokking). There it produces a full-domain certificate over the model's decisions, a Lean theorem for the ideal clock decoder, and an empirical finding about where the celebrated "clock" interpretation actually ends — it is decision-complete but not margin-dominant. The two efforts are complementary: this repo is a length-generic Lean induction on a self-trained model, giving the cleanest fully end-to-end chain; [certified-grokking](https://github.com/brian-naughton/certified-grokking) takes an unmodified, widely studied external checkpoint and reports a new empirical finding on it.
 
 ## Status
 
@@ -134,6 +146,14 @@ novelty is the *mechanism + exact checkability*, not the accuracy number.
 See [`docs/FAQ.md`](docs/FAQ.md) for the full reviewer FAQ — how to self-verify,
 the three corroboration claims, how it differs from Gross et al. / Hadad et al., and
 honest limitations.
+
+## About this project and review request
+
+This repository was executed AI-first: Claude (Anthropic) operated as the researcher-engineer in an agentic loop — selecting the approach, writing the code and the Lean proofs, and drafting the write-up — with GPT-5.5 (OpenAI Codex) used for adversarial review passes at the design gates. Brian Naughton directed the project, made the judgement calls, reviewed the outputs, and takes responsibility for the repository. The point of naming all this is that the claims above are meant to be judged by the reproducible artefacts — the Lean kernel, the exhaustive certificate, the independent checker — and *not* by trust in any model-generated text. None of the adversarial review here is a substitute for human peer review.
+
+**Peer review is genuinely invited.** If you find an error — in the mathematics, the code, the Lean statements, or the framing — please open an issue; corrections and failed replications are the most useful contributions this project can receive.
+
+I am also looking for AI research-engineering roles: [Brian Naughton on LinkedIn](https://www.linkedin.com/in/bnaughton/).
 
 ## License
 
