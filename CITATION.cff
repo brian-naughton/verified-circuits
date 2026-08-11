@@ -9,6 +9,7 @@ authors:
     orcid: "https://orcid.org/0009-0008-3404-610X"
 date-released: 2026-06-14
 repository-code: "https://github.com/brian-naughton/verified-circuits"
+doi: 10.5281/zenodo.21893055
 license: MIT
 abstract: >
   A learned tiny transformer is reverse-engineered into a human-readable

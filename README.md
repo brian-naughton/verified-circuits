@@ -2,6 +2,8 @@
 
 # verified-circuits
 
+[![DOI](assets/doi-badge.svg)](https://doi.org/10.5281/zenodo.21893055)
+
 **Kernel-checkable mechanistic circuits for learned transformers.**
 
 > **▶ Start here: [the explainer notebook](explainer.ipynb)** — an executed,
