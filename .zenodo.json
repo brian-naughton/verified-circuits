@@ -1,0 +1,35 @@
+{
+  "title": "verified-circuits: kernel-checkable mechanistic circuits for learned transformers",
+  "description": "<p>A tiny transformer is trained from scratch on a complete finite task &mdash; Dyck-1 balanced parentheses over every input up to length 16 &mdash; reverse-engineered into a human-readable symbolic circuit, and shipped with independently checkable evidence that <strong>Spec == Circuit == Model</strong> over the entire input domain.</p><p>The chain is three links at three named trust levels. <em>Circuit == Spec</em> is a Lean 4 theorem proved by structural induction, so it holds for every length; the axiom audit reports only <code>propext</code> and <code>Quot.sound</code> (no <code>sorry</code>, no <code>native_decide</code>, no Mathlib), so a sceptic trusts only the Lean kernel. <em>Circuit == Model</em> is a rigorous interval-arithmetic certificate over exact dyadic rationals with outward rounding, giving a strictly positive decision margin on every one of the 65,536 inputs at n=16 (rational margin lower bound &ge; +8.0950), re-verifiable from the weight export alone by a torch-free checker. The remaining seam &mdash; that the Lean and Python definitions transcribe the same algorithm &mdash; is corroborated, not proven, and is labelled as such.</p><p>The model is deliberately tiny and the task deliberately simple. The contribution is not scale: it is the complete, checkable chain from specification to circuit to trained weights, with each link's trust level named.</p><p>This is the first repository of three. It is continued by <a href=\"https://github.com/brian-naughton/certified-grokking\">certified-grokking</a>, which applies the same discipline to a canonical checkpoint the authors did not train, and by <a href=\"https://github.com/brian-naughton/certified-inference\">certified-inference</a>, which carries it to a real pretrained LayerNorm language model too large to enumerate.</p><p><em>This record archives the repository as of 11 August 2026. The work was first made public on 14 June 2026; the DOI was minted later, so the archive date and the original publication date differ.</em></p>",
+  "creators": [
+    {
+      "name": "Naughton, Brian",
+      "affiliation": "Independent researcher",
+      "orcid": "0009-0008-3404-610X"
+    }
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open",
+  "keywords": [
+    "mechanistic interpretability",
+    "formal verification",
+    "transformers",
+    "Lean 4",
+    "interval arithmetic",
+    "certified computation",
+    "AI safety"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/brian-naughton/certified-grokking",
+      "relation": "references",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://github.com/brian-naughton/certified-inference",
+      "relation": "references",
+      "resource_type": "software"
+    }
+  ]
+}
