@@ -36,9 +36,15 @@ circuit-to-spec *equivalence* for a learned algorithm over the whole finite
 domain, as a reproducible artefact a skeptic can verify without trusting our
 Python.** That is the gap this repo targets.
 
-## Follow-on work
+## The trilogy
 
-The same approach was subsequently carried over to a model we did **not** train: the published [Nanda et al. modular-addition "grokking" checkpoint](https://github.com/brian-naughton/certified-grokking). There it produces a full-domain certificate over the model's decisions, a Lean theorem for the ideal clock decoder, and an empirical finding about where the celebrated "clock" interpretation actually ends — it is decision-complete but not margin-dominant. The two efforts are complementary: this repo is a length-generic Lean induction on a self-trained model, giving the cleanest fully end-to-end chain; [certified-grokking](https://github.com/brian-naughton/certified-grokking) takes an unmodified, widely studied external checkpoint and reports a new empirical finding on it.
+This repository is the first of three, built in sequence, each answering an objection to the one before it. Together they push a single question: how far can a machine-checkable guarantee about a neural network be taken?
+
+1. **verified-circuits** — *you are here.* `Spec == Circuit == Model` for a tiny transformer trained from scratch on a complete finite task: a length-generic Lean theorem for the circuit↔spec half, and a rigorous interval certificate over the whole 65,536-input domain. The cleanest end-to-end chain, on a model of our own.
+2. **[certified-grokking](https://github.com/brian-naughton/certified-grokking)** — the same discipline applied to a model we did **not** train: the canonical Nanda et al. modular-addition "grokking" checkpoint, certified over all 12,769 inputs, with the ideal clock decoder proved in Lean and the certified finding that the celebrated clock circuit is *decision-complete but not margin-dominant*.
+3. **[certified-inference](https://github.com/brian-naughton/certified-inference)** — a real pretrained LayerNorm language model, too large to enumerate: pre-registered, exact-real, full-vocabulary next-token certificates over a pinned corpus, wrapped in a Hoeffding lower bound whose statistical theorem is kernel-checked in Lean.
+
+The arc: a guarantee we can close end-to-end → the same guarantee on someone else's celebrated model, including the point where its story runs out → the guarantee at a scale where exhaustive checking is impossible and the honest claim becomes statistical.
 
 ## Status
 
@@ -153,7 +159,11 @@ This repository was executed AI-first: Claude (Anthropic) operated as the resear
 
 **Peer review is genuinely invited.** If you find an error — in the mathematics, the code, the Lean statements, or the framing — please open an issue; corrections and failed replications are the most useful contributions this project can receive.
 
-I am also looking for AI research and engineering roles: [Brian Naughton on LinkedIn](https://www.linkedin.com/in/bnaughton/).
+## Contact
+
+Brian Naughton, independent researcher — <naughtonb@proton.me> · ORCID [0009-0008-3404-610X](https://orcid.org/0009-0008-3404-610X) · [LinkedIn](https://www.linkedin.com/in/bnaughton/).
+
+Corrections, questions, replication attempts, and collaboration are all welcome — by email or as an issue on this repository. I am also looking for AI research and engineering roles.
 
 ## License
 

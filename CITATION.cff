@@ -4,7 +4,11 @@ message: "If you use this work, please cite it."
 authors:
   - family-names: Naughton
     given-names: Brian
+    email: naughtonb@proton.me
+    affiliation: "Independent researcher"
+    orcid: "https://orcid.org/0009-0008-3404-610X"
 date-released: 2026-06-14
+repository-code: "https://github.com/brian-naughton/verified-circuits"
 license: MIT
 abstract: >
   A learned tiny transformer is reverse-engineered into a human-readable
@@ -18,3 +22,18 @@ keywords:
   - formal verification
   - transformers
   - AI safety
+references:
+  - type: software
+    title: "Certified Grokking: A Machine-Checked Certificate for the Nanda et al. Modular-Addition Transformer"
+    authors:
+      - family-names: Naughton
+        given-names: Brian
+    year: 2026
+    notes: "Sister project: https://github.com/brian-naughton/certified-grokking"
+  - type: software
+    title: "Certified Inference: A Pre-Registered, Exact-Real, Kernel-Checked Next-Token Certificate for a Pretrained LayerNorm Language Model"
+    authors:
+      - family-names: Naughton
+        given-names: Brian
+    year: 2026
+    notes: "Sister project: https://github.com/brian-naughton/certified-inference"

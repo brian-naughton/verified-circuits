@@ -1,3 +1,18 @@
+# FIREWALL: internal working docs — never tracked, never in history, never pushed.
+# Specs, plans, adversarial reviews, positioning and outreach notes live on disk only.
+.superpowers/
+docs/superpowers/
+docs/reviews/
+docs/plans/
+docs/specs/
+INTERNAL*
+OUTREACH*
+REVIEW-BRIEF*
+*.internal.md
+sol-prompt*
+*-draft.txt
+x-post-*
+
 __pycache__/
 *.pyc
 .pytest_cache/
